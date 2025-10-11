@@ -30,24 +30,24 @@ facebook : fb.com/sumit.luv
 <div class="container">
 
     <form  action="/search" method="get" style="margin-left:70%;" class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" name="query" id="query" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+      <input class="form-control mr-sm-2" type="search" placeholder="Buscar" name="query" id="query" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Búsqueda</button>
     </form>
  
 
   {% if patients %}
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Your Total Patient List</h6>
+      <h6 class="panel-title">Total de pacientes</h6>
     </div>
     <table class="table table-hover" id="dev-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Profile Picture</th>
-          <th>Symptoms</th>
-          <th>Mobile</th>
-          <th>Address</th>
+          <th>Nombre</th>
+          <th>Foto</th>
+          <th>Sintomas</th>
+          <th>Número</th>
+          <th>Correo</th>
 
         </tr>
       </thead>
@@ -64,15 +64,10 @@ facebook : fb.com/sumit.luv
   </div>
   {%else%}
   <br><br><br>
-  <h4 style="text-align: center;color: red;">No Patient Found !!!</h4>
+  <h4 style="text-align: center;color: red;">Sin pacientes aún!!!</h4>
   {% endif %}
 
 
 </div>
-<!--
-developed By : sumit kumar
-facebook : fb.com/sumit.luv
-youtube : youtube.com/lazycoders
--->
 
 {% endblock content %}

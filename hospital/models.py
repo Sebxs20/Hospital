@@ -3,12 +3,13 @@ from django.contrib.auth.models import User
 
 
 
-departments=[('Cardiologist','Cardiologist'),
-('Dermatologists','Dermatologists'),
-('Emergency Medicine Specialists','Emergency Medicine Specialists'),
-('Allergists/Immunologists','Allergists/Immunologists'),
-('Anesthesiologists','Anesthesiologists'),
-('Colon and Rectal Surgeons','Colon and Rectal Surgeons')
+departments=[ 
+    ('Cardiólogo', 'Cardiólogo'),
+    ('Dermatólogo', 'Dermatólogo'),
+    ('Especialista en Medicina de Emergencias', 'Especialista en Medicina de Emergencias'),
+    ('Alergólogo/Inmunólogo', 'Alergólogo/Inmunólogo'),
+    ('Anestesiólogo', 'Anestesiólogo'),
+    ('Cirujano Colorrectal', 'Cirujano Colorrectal'),
 ]
 class Doctor(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
@@ -75,8 +76,3 @@ class PatientDischargeDetails(models.Model):
     doctorFee=models.PositiveIntegerField(null=False)
     OtherCharge=models.PositiveIntegerField(null=False)
     total=models.PositiveIntegerField(null=False)
-
-
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders
