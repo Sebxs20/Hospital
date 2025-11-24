@@ -1,27 +1,31 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="es" dir="ltr">
 
 <head>
   <meta charset="utf-8">
-  <title>LUJASE</title>
+  <title>LUJASE - Panel Doctor</title>
 
   <style media="screen">
     .market-update-block {
       padding: 2em 2em;
       background: #999;
+      border-radius: 15px;
+      margin-bottom: 20px;
     }
 
     .market-update-block h3 {
       color: #fff;
       font-size: 2.5em;
-      font-family: 'Carrois Gothic', sans-serif;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      font-weight: bold;
     }
 
     .market-update-block h4 {
       font-size: 1.2em;
       color: #fff;
       margin: 0.3em 0em;
-      font-family: 'Carrois Gothic', sans-serif;
+      font-family: 'Arial', sans-serif;
     }
 
     .market-update-block p {
@@ -31,104 +35,99 @@
     }
 
     .market-update-block.clr-block-1 {
-      background: #ff0000;
+      background: linear-gradient(135deg, #ff0000, #ff6b6b);
       margin-right: 0.8em;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 15px 0 rgba(255, 0, 0, 0.3);
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
     .market-update-block.clr-block-2 {
-      background: #FC8213;
+      background: linear-gradient(135deg, #FC8213, #ffa94d);
       margin-right: 0.8em;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      box-shadow: 0 4px 15px 0 rgba(252, 130, 19, 0.3);
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
     .market-update-block.clr-block-3 {
-      background: #1355f9;
-      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+      background: linear-gradient(135deg, #1355f9, #4d7cff);
+      box-shadow: 0 4px 15px 0 rgba(19, 85, 249, 0.3);
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
     .market-update-block.clr-block-1:hover {
-      background: #3C3C3C;
-      transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
+      background: linear-gradient(135deg, #cc0000, #ff5252);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px 0 rgba(255, 0, 0, 0.4);
     }
 
     .market-update-block.clr-block-2:hover {
-      background: #3C3C3C;
-      transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
+      background: linear-gradient(135deg, #e67300, #ff9800);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px 0 rgba(252, 130, 19, 0.4);
     }
 
     .market-update-block.clr-block-3:hover {
-      background: #3C3C3C;
-      transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
+      background: linear-gradient(135deg, #0d47e1, #2962ff);
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px 0 rgba(19, 85, 249, 0.4);
     }
 
-    .market-update-right i.fa.fa-user-o {
+    .market-update-right i {
       font-size: 3em;
-      color: #68AE00;
       width: 80px;
       height: 80px;
       background: #fff;
       text-align: center;
-      border-radius: 49px;
-      -webkit-border-radius: 49px;
-      -moz-border-radius: 49px;
-      -o-border-radius: 49px;
+      border-radius: 50%;
       line-height: 1.7em;
+      transition: 0.3s all;
     }
 
-    .market-update-right i.fa.fa-check-circle-o {
-      font-size: 3em;
+    .market-update-right i.fa-calendar {
+      color: #ff0000;
+    }
+
+    .market-update-right i.fa-user-o {
       color: #FC8213;
-      width: 80px;
-      height: 80px;
-      background: #fff;
-      text-align: center;
-      border-radius: 49px;
-      -webkit-border-radius: 49px;
-      -moz-border-radius: 49px;
-      -o-border-radius: 49px;
-      line-height: 1.7em;
     }
 
-    .market-update-right i.fa.fa-calendar {
-      font-size: 3em;
-      color: #337AB7;
-      width: 80px;
-      height: 80px;
-      background: #fff;
-      text-align: center;
-      border-radius: 49px;
-      -webkit-border-radius: 49px;
-      -moz-border-radius: 49px;
-      -o-border-radius: 49px;
-      line-height: 1.7em;
+    .market-update-right i.fa-check-circle-o {
+      color: #1355f9;
+    }
+
+    .market-update-block:hover .market-update-right i {
+      transform: scale(1.1);
     }
 
     .market-update-left {
       padding: 0px;
     }
+
+    .market-updates {
+      margin: 20px 0;
+    }
+
+    .clearfix {
+      clear: both;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .market-update-block {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      
+      .market-update-block h3 {
+        font-size: 2em;
+      }
+      
+      .market-update-block h4 {
+        font-size: 1em;
+      }
+    }
   </style>
+  
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -136,45 +135,57 @@
 </head>
 
 <body>
-  <div class="market-updates">
-    <div class="col-md-4 market-update-gd">
-      <div class="market-update-block clr-block-1">
-        <div class="col-md-8 market-update-left">
-          <h3>{{appointmentcount}}</h3>
-          <h4>Citas para ti</h4>
+  <div class="container-fluid">
+    <div class="row market-updates">
+      
+      <!-- Citas para ti -->
+      <div class="col-md-4 col-sm-6 market-update-gd">
+        <div class="market-update-block clr-block-1">
+          <div class="row">
+            <div class="col-md-8 col-sm-8 col-xs-8 market-update-left">
+              <h3>{{appointmentcount}}</h3>
+              <h4>Citas para ti</h4>
+              <p>Citas pendientes y programadas</p>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 market-update-right">
+              <i class="fa fa-calendar"></i>
+            </div>
+          </div>
+          <div class="clearfix"></div>
         </div>
-        <div class="col-md-4 market-update-right">
-          <i class="fa fa-calendar"> </i>
-        </div>
-        <div class="clearfix"> </div>
       </div>
-    </div>
-    <div class="col-md-4 market-update-gd">
-      <div class="market-update-block clr-block-2">
-        <div class="col-md-8 market-update-left">
-          <h3>{{patientcount}}</h3>
-          <h4>Pacientes asignados para ti</h4>
 
+      <!-- Pacientes asignados -->
+      <div class="col-md-4 col-sm-6 market-update-gd">
+        <div class="market-update-block clr-block-2">
+          <div class="row">
+            <div class="col-md-8 col-sm-8 col-xs-8 market-update-left">
+              <h3>{{patientcount}}</h3>
+              <h4>Pacientes asignados</h4>
+              <p>Tus pacientes activos</p>
+            </div>
+            <div class="col-md-4 col-sm-4 col-xs-4 market-update-right">
+              <i class="fa fa-user-o"></i>
+            </div>
+          </div>
+          <div class="clearfix"></div>
         </div>
-        <div class="col-md-4 market-update-right">
-          <i class="fa fa-user-o"></i>
-        </div>
-        <div class="clearfix"> </div>
       </div>
     </div>
-    <div class="col-md-4 market-update-gd">
-      <div class="market-update-block clr-block-3">
-        <div class="col-md-8 market-update-left">
-          <h3>{{patientdischarged}}</h3>
-          <h4>Descarga de pacientes</h4>
-        </div>
-        <div class="col-md-4 market-update-right">
-          <i class="fa fa-check-circle-o" aria-hidden="true"></i>
-        </div>
-        <div class="clearfix"> </div>
-      </div>
-    </div>
-    <div class="clearfix"> </div>
   </div>
+
+  <script>
+    // Efecto hover mejorado
+    $(document).ready(function() {
+      $('.market-update-block').hover(
+        function() {
+          $(this).css('transform', 'translateY(-5px)');
+        },
+        function() {
+          $(this).css('transform', 'translateY(0)');
+        }
+      );
+    });
+  </script>
 </body>
 </html>

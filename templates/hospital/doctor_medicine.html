@@ -1,0 +1,84 @@
+{% extends 'hospital/doctor_base.html' %}
+{% block content %}
+
+<head>
+  <style>
+    .stock-badge {
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .badge-normal { background: #28a745; color: white; }
+    .badge-low { background: #ffc107; color: black; }
+    .badge-out { background: #dc3545; color: white; }
+  </style>
+</head>
+
+<div class="container">
+  <div class="panel panel-primary">
+    <div class="panel-heading">
+      <h3 style="text-align: center; color: white; padding: 15px;">INVENTARIO DE MEDICAMENTOS</h3>
+    </div>
+    
+    <div class="panel-body">
+      
+      {% if low_stock %}
+      <div class="alert alert-warning">
+        <strong><i class="fa fa-exclamation-triangle"></i> Medicamentos con Stock Bajo:</strong>
+        {% for medicine in low_stock %}
+          {{ medicine.name }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if medicines %}
+      <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>Medicamento</th>
+              <th>Nombre Genérico</th>
+              <th>Stock Disponible</th>
+              <th>Precio</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for medicine in medicines %}
+            <tr>
+              <td>
+                <strong>{{ medicine.name }}</strong>
+                {% if medicine.requires_prescription %}
+                  <br><small class="text-danger"><i class="fa fa-file-text"></i> Requiere receta</small>
+                {% endif %}
+              </td>
+              <td>{{ medicine.generic_name|default:"-" }}</td>
+              <td>{{ medicine.stock_quantity }} {{ medicine.unit }}</td>
+              <td>${{ medicine.price }}</td>
+              <td>
+                {% if medicine.stock_status == 'normal' %}
+                  <span class="stock-badge badge-normal">DISPONIBLE</span>
+                {% elif medicine.stock_status == 'bajo' %}
+                  <span class="stock-badge badge-low">STOCK BAJO</span>
+                {% else %}
+                  <span class="stock-badge badge-out">AGOTADO</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="alert alert-info text-center">
+        <h4>No hay medicamentos disponibles</h4>
+        <p>El inventario de medicamentos está vacío.</p>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

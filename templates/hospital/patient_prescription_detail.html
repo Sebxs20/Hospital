@@ -1,0 +1,140 @@
+{% extends 'hospital/patient_base.html' %}
+{% load static %}
+{% block content %}
+<br><br><br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="text-center">
+                        <i class="fa fa-file-medical"></i> Receta Médica #{{ prescription.id }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Información General -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Información del Paciente</h5>
+                            <p><strong>Nombre:</strong> {{ prescription.patient.get_name }}</p>
+                            <p><strong>Doctor:</strong> {{ prescription.doctor.get_name }}</p>
+                            <p><strong>Especialidad:</strong> {{ prescription.doctor.department }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Información de la Receta</h5>
+                            <p><strong>Fecha:</strong> {{ prescription.created_at|date:"d/m/Y" }}</p>
+                            <p><strong>Estado:</strong> 
+                                <span class="badge badge-{% if prescription.status == 'completada' %}success{% else %}warning{% endif %}">
+                                    {{ prescription.get_status_display }}
+                                </span>
+                            </p>
+                            <p><strong>Pago:</strong> 
+                                <span class="badge badge-{% if prescription.payment_status == 'pagado' %}success{% else %}warning{% endif %}">
+                                    {{ prescription.get_payment_status_display }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Diagnóstico y Síntomas -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <strong>Diagnóstico</strong>
+                                </div>
+                                <div class="card-body">
+                                    {{ prescription.diagnosis|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <strong>Síntomas</strong>
+                                </div>
+                                <div class="card-body">
+                                    {{ prescription.symptoms|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medicamentos -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-dark">
+                            <strong><i class="fa fa-medkit"></i> Medicamentos Recetados</strong>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Medicamento</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unitario</th>
+                                            <th>Subtotal</th>
+                                            <th>Dosis</th>
+                                            <th>Duración</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for medicine in prescription.medicines.all %}
+                                        <tr>
+                                            <td>{{ medicine.medicine.name }}</td>
+                                            <td>{{ medicine.quantity }}</td>
+                                            <td>${{ medicine.medicine.price }}</td>
+                                            <td>${{ medicine.subtotal }}</td>
+                                            <td>{{ medicine.dosage }}</td>
+                                            <td>{{ medicine.duration }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot class="bg-light">
+                                        <tr>
+                                            <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                                            <td colspan="3" class="text-success">
+                                                <strong style="font-size: 18px;">${{ prescription.total_amount }}</strong>
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instrucciones -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <strong>Instrucciones para el Paciente</strong>
+                        </div>
+                        <div class="card-body">
+                            {{ prescription.instructions|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Botones de Acción -->
+                    <div class="text-center">
+                        {% if prescription.payment_status == 'pendiente' %}
+                        <a href="{% url 'patient-payment' prescription.id %}" class="btn btn-success btn-lg">
+                            <i class="fa fa-credit-card"></i> Pagar Receta - ${{ prescription.total_amount }}
+                        </a>
+                        {% elif prescription.payment_status == 'pagado' %}
+                        <div class="alert alert-success">
+                            <i class="fa fa-check-circle"></i> 
+                            <strong>Receta pagada exitosamente</strong><br>
+                            Puede pasar a caja a recoger sus medicamentos.
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'patient-prescription' %}" class="btn btn-secondary btn-lg">
+                            <i class="fa fa-arrow-left"></i> Volver a Mis Recetas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

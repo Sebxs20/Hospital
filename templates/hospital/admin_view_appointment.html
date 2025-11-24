@@ -16,37 +16,71 @@
     }
 
     .row {
-      margin: 100px;
+      margin: 50px;
     }
+    
+    .badge {
+      padding: 5px 10px;
+      border-radius: 4px;
+      color: white;
+      font-size: 12px;
+    }
+    
+    .badge-warning { background-color: #f0ad4e; }
+    .badge-success { background-color: #5cb85c; }
+    .badge-danger { background-color: #d9534f; }
+    .badge-info { background-color: #5bc0de; }
   </style>
 </head>
-<!--
-written By : sumit kumar
-facebook : fb.com/sumit.luv
--->
+
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Citas</h6>
+      <h3 class="panel-title" style="text-align: center; color: white; padding: 15px;">TODAS LAS CITAS DEL SISTEMA</h3>
     </div>
-    <table class="table table-hover" id="dev-table">
+    
+    {% if appointments %}
+    <table class="table table-hover table-striped" id="dev-table">
       <thead>
         <tr>
-          <th>Nombre del doctor</th>
-          <th>Nombre del paciente</th>
+          <th>Doctor</th>
+          <th>Paciente</th>
           <th>Descripción</th>
           <th>Fecha</th>
+          <th>Estado</th>
         </tr>
       </thead>
-      {% for a in appointments %}
-      <tr>
-        <td> {{a.doctorName}}</td>
-        <td>{{a.patientName}}</td>
-        <td>{{a.description}}</td>
-        <td>{{a.appointmentDate}}</td>
-      </tr>
-      {% endfor %}
+      <tbody>
+        {% for a in appointments %}
+        <tr>
+          <td><strong>{{ a.doctorName }}</strong></td>
+          <td><strong>{{ a.patientName }}</strong></td>
+          <td>{{ a.description }}</td>
+          <td>{{ a.appointmentDate }}</td>
+          <td>
+            {% if a.status == 'pending' %}
+              <span class="badge badge-warning">PENDIENTE</span>
+            {% elif a.status == 'done' %}
+              <span class="badge badge-success">ATENDIDO</span>
+            {% elif a.status == 'cancelled' %}
+              <span class="badge badge-danger">CANCELADO</span>
+            {% else %}
+              <span class="badge badge-info">{{ a.status|upper }}</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+    {% else %}
+    <div class="panel-body">
+      <div class="alert alert-info text-center">
+        <h4>No hay citas en el sistema</h4>
+        <p>Las citas que se creen aparecerán aquí.</p>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
+
 {% endblock content %}

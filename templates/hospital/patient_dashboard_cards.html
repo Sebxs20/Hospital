@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="es" dir="ltr">
 
 <head>
   <meta charset="utf-8">
-  <title></title>
+  <title>LUJASE</title>
 
   <style media="screen">
     .market-update-block {
@@ -35,9 +35,6 @@
       margin-right: 0.8em;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
     .market-update-block.clr-block-2 {
@@ -45,42 +42,19 @@
       margin-right: 0.8em;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
     .market-update-block.clr-block-3 {
       background: #1355f9;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
-    .market-update-block.clr-block-1:hover {
-      background: #3C3C3C;
-      transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
-    }
-
-    .market-update-block.clr-block-2:hover {
-      background: #3C3C3C;
-      transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
-    }
-
+    .market-update-block.clr-block-1:hover,
+    .market-update-block.clr-block-2:hover,
     .market-update-block.clr-block-3:hover {
       background: #3C3C3C;
       transition: 0.5s all;
-      -webkit-transition: 0.5s all;
-      -moz-transition: 0.5s all;
-      -o-transition: 0.5s all;
     }
 
     .market-update-right i.fa.fa-user-o,
@@ -92,9 +66,6 @@
       background: #fff;
       text-align: center;
       border-radius: 49px;
-      -webkit-border-radius: 49px;
-      -moz-border-radius: 49px;
-      -o-border-radius: 49px;
       line-height: 1.7em;
     }
 
@@ -107,9 +78,6 @@
       background: #fff;
       text-align: center;
       border-radius: 49px;
-      -webkit-border-radius: 49px;
-      -moz-border-radius: 49px;
-      -o-border-radius: 49px;
       line-height: 1.7em;
     }
 
@@ -122,22 +90,19 @@
       background: #fff;
       text-align: center;
       border-radius: 49px;
-      -webkit-border-radius: 49px;
-      -moz-border-radius: 49px;
-      -o-border-radius: 49px;
       line-height: 1.7em;
     }
-
-
 
     .market-update-left {
       padding: 0px;
     }
   </style>
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 </head>
 
 <body>
@@ -146,94 +111,89 @@
       <div class="market-update-block clr-block-1">
         <div class="col-md-8 market-update-left">
           <h3>{{doctorName}}</h3>
-          <h4>Doctor Name</h4>
+          <h4>Nombre del Doctor</h4>
         </div>
         <div class="col-md-4 market-update-right">
-          <i class="fa fa-user-o"> </i>
+          <i class="fa fa-user-o"></i>
         </div>
-        <div class="clearfix"> </div>
+        <div class="clearfix"></div>
       </div>
     </div>
+
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-2">
         <div class="col-md-8 market-update-left">
           <h3>{{symptoms}}</h3>
-          <h4>Symptoms</h4>
+          <h4>Síntomas</h4>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-info-circle"></i>
         </div>
-        <div class="clearfix"> </div>
+        <div class="clearfix"></div>
       </div>
     </div>
+
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-3">
         <div class="col-md-8 market-update-left">
           <h3>{{doctorMobile}}</h3>
-          <h4>Doctor Mobile</h4>
+          <h4>Teléfono del Doctor</h4>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-mobile" aria-hidden="true"></i>
         </div>
-        <div class="clearfix"> </div>
+        <div class="clearfix"></div>
       </div>
     </div>
-    <div class="clearfix"> </div>
+
+    <div class="clearfix"></div>
   </div>
 
-
-
   <br><br><br>
-
-
 
   <div class="market-updates">
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-1">
         <div class="col-md-8 market-update-left">
           <h3>{{doctorAddress}}</h3>
-          <h4>Doctor Address</h4>
+          <h4>Dirección del Doctor</h4>
         </div>
         <div class="col-md-4 market-update-right">
-          <i class="fa fa-map-marker"> </i>
+          <i class="fa fa-map-marker"></i>
         </div>
-        <div class="clearfix"> </div>
+        <div class="clearfix"></div>
       </div>
     </div>
+
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-2">
         <div class="col-md-8 market-update-left">
           <h3>{{doctorDepartment}}</h3>
-          <h4>Doctor Department</h4>
+          <h4>Departamento del Doctor</h4>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-list-alt"></i>
         </div>
-        <div class="clearfix"> </div>
+        <div class="clearfix"></div>
       </div>
     </div>
+
     <div class="col-md-4 market-update-gd">
       <div class="market-update-block clr-block-3">
         <div class="col-md-8 market-update-left">
           <h3>{{admitDate}}</h3>
-          <h4>Admit Date</h4>
+          <h4>Fecha de Ingreso</h4>
         </div>
         <div class="col-md-4 market-update-right">
           <i class="fa fa-calendar-o" aria-hidden="true"></i>
         </div>
-        <div class="clearfix"> </div>
+        <div class="clearfix"></div>
       </div>
     </div>
-    <div class="clearfix"> </div>
+    
+
+    <div class="clearfix"></div>
   </div>
-
-  <!--
-    developed By : sumit kumar
-    facebook : fb.com/sumit.luv
-    youtube : youtube.com/lazycoders
-    -->
-
-
 </body>
 
 </html>

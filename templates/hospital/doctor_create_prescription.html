@@ -1,0 +1,327 @@
+{% extends 'hospital/doctor_base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br><br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" style="background-color: #1a237e; color: white;">
+                    <h4 class="text-center">Crear Receta Médica</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Información de la cita si viene de una -->
+                    {% if appointment_id %}
+                    <div class="alert alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        Creando receta médica a partir de la cita #{{ appointment_id }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" id="prescriptionForm">
+                        {% csrf_token %}
+
+                        <!-- Mensajes -->
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+
+                        <!-- Datos del Paciente -->
+                        <div class="form-group">
+                            <label><strong>Paciente *</strong></label>
+                            <select name="patient" class="form-control" required>
+                                <option value="">Seleccionar paciente</option>
+                                {% for patient in my_patients %}
+                                <option value="{{ patient.id }}" {% if initial_patient and initial_patient.id == patient.id %}selected{% endif %}>
+                                    {{ patient.get_name }} - {{ patient.symptoms }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Diagnóstico y Síntomas -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Diagnóstico *</strong></label>
+                                    <textarea name="diagnosis" class="form-control" rows="3" required placeholder="Ingrese el diagnóstico del paciente"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Síntomas *</strong></label>
+                                    <textarea name="symptoms" class="form-control" rows="3" required placeholder="Describa los síntomas presentados"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Medicamentos -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-info text-white">
+                                <h5>
+                                    <i class="fa fa-medkit"></i> Medicamentos Recetados
+                                    <small class="float-right">Stock disponible mostrado entre paréntesis</small>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="medicines-container">
+                                    <!-- Los medicamentos se agregarán aquí dinámicamente -->
+                                </div>
+                                <button type="button" class="btn btn-success btn-sm mt-2" onclick="addMedicine()">
+                                    <i class="fa fa-plus"></i> Agregar Medicamento
+                                </button>
+
+                                {% if not medicines %}
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fa fa-exclamation-triangle"></i>
+                                    No hay medicamentos disponibles en el inventario.
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Instrucciones -->
+                        <div class="form-group">
+                            <label><strong>Instrucciones para el Paciente *</strong></label>
+                            <textarea name="instructions" class="form-control" rows="3" required placeholder="Indique las instrucciones de tratamiento y cuidados"></textarea>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                <i class="fa fa-save"></i> Crear Receta
+                            </button>
+                            <a href="{% url 'doctor-prescription' %}" class="btn btn-secondary btn-lg">
+                                <i class="fa fa-times"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Template para medicamentos - VERSIÓN SIMPLIFICADA -->
+<template id="medicine-template">
+    <div class="medicine-item card mb-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label><small><strong>Medicamento *</strong></small></label>
+                    <select name="medicines[]" class="form-control medicine-select" required>
+                        <option value="">Seleccionar medicamento</option>
+                        <!-- Los medicamentos se cargarán via JavaScript -->
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label><small><strong>Cantidad *</strong></small></label>
+                    <input type="number" name="quantities[]" class="form-control quantity-input" min="1" placeholder="Cantidad" required>
+                </div>
+                <div class="col-md-3">
+                    <label><small><strong>Dosis *</strong></small></label>
+                    <input type="text" name="dosages[]" class="form-control" placeholder="Ej: 1 tableta cada 8h" required>
+                </div>
+                <div class="col-md-2">
+                    <label><small><strong>Duración *</strong></small></label>
+                    <input type="text" name="durations[]" class="form-control" placeholder="Ej: 7 días" required>
+                </div>
+                <div class="col-md-2">
+                    <label><small>&nbsp;</small></label>
+                    <button type="button" class="btn btn-danger btn-sm btn-block" onclick="removeMedicine(this)">
+                        <i class="fa fa-trash"></i> Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style>
+    .medicine-item {
+        border-left: 4px solid #1a237e;
+    }
+    .medicine-item .card-body {
+        padding: 15px;
+    }
+    .quantity-input:invalid {
+        border-color: #dc3545;
+    }
+    .quantity-input:valid {
+        border-color: #28a745;
+    }
+    #submitBtn:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+</style>
+
+<script>
+    // Datos de medicamentos pasados desde Django
+    const medicinesData = [
+        {% for medicine in medicines %}
+        {
+            id: {{ medicine.id }},
+            name: "{{ medicine.name }}",
+            stock: {{ medicine.stock_quantity }},
+            unit: "{{ medicine.unit }}"
+        },
+        {% endfor %}
+    ];
+
+    let medicineCount = 0;
+
+    function addMedicine() {
+        const template = document.getElementById('medicine-template');
+        const container = document.getElementById('medicines-container');
+
+        if (!container) {
+            console.error('No se encontró el contenedor de medicamentos');
+            return;
+        }
+
+        const clone = template.content.cloneNode(true);
+        const select = clone.querySelector('.medicine-select');
+        
+        // Llenar el select con medicamentos
+        medicinesData.forEach(med => {
+            const option = document.createElement('option');
+            option.value = med.id;
+            option.textContent = `${med.name} - Stock: ${med.stock} ${med.unit}`;
+            option.dataset.stock = med.stock;
+            option.dataset.unit = med.unit;
+            
+            if (med.stock === 0) {
+                option.textContent += ' (AGOTADO)';
+            } else if (med.stock < 10) {
+                option.textContent += ' (STOCK BAJO)';
+            }
+            
+            select.appendChild(option);
+        });
+
+        container.appendChild(clone);
+        medicineCount++;
+        updateSubmitButton();
+    }
+
+    function removeMedicine(button) {
+        button.closest('.medicine-item').remove();
+        medicineCount--;
+        updateSubmitButton();
+    }
+
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.disabled = medicineCount === 0;
+            if (medicineCount === 0) {
+                submitBtn.title = 'Debe agregar al menos un medicamento';
+            } else {
+                submitBtn.title = '';
+            }
+        }
+    }
+
+    // Validar stock y cantidad
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('medicine-select')) {
+            const selectedOption = e.target.options[e.target.selectedIndex];
+            const stock = parseInt(selectedOption.dataset.stock) || 0;
+            const quantityInput = e.target.closest('.medicine-item').querySelector('.quantity-input');
+
+            if (quantityInput) {
+                quantityInput.max = stock;
+                if (parseInt(quantityInput.value) > stock) {
+                    alert(`⚠️ Stock insuficiente\nMedicamento: ${selectedOption.text}\nStock disponible: ${stock} unidades`);
+                    quantityInput.value = '';
+                    quantityInput.focus();
+                }
+            }
+        }
+
+        if (e.target.classList.contains('quantity-input')) {
+            const medicineSelect = e.target.closest('.medicine-item').querySelector('.medicine-select');
+            const selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
+            const stock = parseInt(selectedOption.dataset.stock) || 0;
+            const quantity = parseInt(e.target.value) || 0;
+
+            if (quantity > stock) {
+                alert(`⚠️ Stock insuficiente\nMedicamento: ${selectedOption.text}\nStock disponible: ${stock} unidades`);
+                e.target.value = '';
+                e.target.focus();
+            }
+        }
+    });
+
+    // Validar formulario antes de enviar
+    document.getElementById('prescriptionForm').addEventListener('submit', function (e) {
+        const medicineItems = document.querySelectorAll('.medicine-item');
+        let isValid = true;
+        let errorMessage = '';
+
+        if (medicineItems.length === 0) {
+            isValid = false;
+            errorMessage = 'Debe agregar al menos un medicamento a la receta.';
+        }
+
+        medicineItems.forEach((item) => {
+            const medicineSelect = item.querySelector('.medicine-select');
+            const quantityInput = item.querySelector('.quantity-input');
+            const selectedOption = medicineSelect.options[medicineSelect.selectedIndex];
+            const stock = parseInt(selectedOption.dataset.stock) || 0;
+            const quantity = parseInt(quantityInput.value) || 0;
+
+            if (quantity > stock) {
+                isValid = false;
+                errorMessage = `Stock insuficiente para: ${selectedOption.text}\nStock disponible: ${stock} unidades\nCantidad solicitada: ${quantity}`;
+            }
+
+            if (!medicineSelect.value) {
+                isValid = false;
+                errorMessage = 'Debe seleccionar un medicamento para todos los items.';
+            }
+
+            if (!quantityInput.value || quantity <= 0) {
+                isValid = false;
+                errorMessage = 'Debe ingresar una cantidad válida para todos los medicamentos.';
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('❌ Error en el formulario:\n\n' + errorMessage);
+            return false;
+        }
+
+        const confirmation = confirm('¿Está seguro de crear esta receta médica?\n\nEsta acción no se puede deshacer.');
+        if (!confirmation) {
+            e.preventDefault();
+            return false;
+        }
+
+        return true;
+    });
+
+    // Agregar un medicamento por defecto al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+        addMedicine();
+    });
+</script>
+
+<!-- Agrega esto temporalmente en el formulario para ver qué está pasando -->
+<div class="alert alert-secondary">
+    <h6>DEBUG Info:</h6>
+    <p>Método: {{ request.method }}</p>
+    <p>Patient ID from GET: {{ patient_id }}</p>
+    <p>Appointment ID from GET: {{ appointment_id }}</p>
+</div>
+
+{% endblock %}

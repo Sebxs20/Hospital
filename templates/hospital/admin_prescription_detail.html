@@ -1,0 +1,165 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br><br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <div class="card">
+                <div class="card-header" style="background-color: #1a237e; color: white;">
+                    <h4 class="text-center">
+                        <i class="fa fa-file-text"></i> Detalles Completo de Receta Médica #{{ prescription.id }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Botón volver -->
+                    <div class="mb-4">
+                        <a href="{% url 'admin-view-prescription' %}" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Volver a la Lista
+                        </a>
+                    </div>
+
+                    <!-- Información de la Receta -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5>Información del Paciente</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Nombre:</strong> {{ prescription.patient.get_name }}</p>
+                                    <p><strong>Síntomas:</strong> {{ prescription.patient.symptoms }}</p>
+                                    <p><strong>Doctor Asignado:</strong> {{ prescription.patient.assignedDoctorName }}</p>
+                                    <p><strong>Fecha de Admisión:</strong> {{ prescription.patient.admitDate }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-header bg-info text-white">
+                                    <h5>Información del Doctor</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Nombre:</strong> {{ prescription.doctor.get_name }}</p>
+                                    <p><strong>Departamento:</strong> {{ prescription.doctor.department }}</p>
+                                    <p><strong>Teléfono:</strong> {{ prescription.doctor.mobile }}</p>
+                                    <p><strong>Dirección:</strong> {{ prescription.doctor.address }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagnóstico y Síntomas -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-white">
+                            <h5>Diagnóstico y Síntomas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Diagnóstico:</strong></p>
+                                    <div class="alert alert-light">
+                                        {{ prescription.diagnosis }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Síntomas Reportados:</strong></p>
+                                    <div class="alert alert-light">
+                                        {{ prescription.symptoms }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Medicamentos Recetados -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5>Medicamentos Recetados</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>Medicamento</th>
+                                            <th>Cantidad</th>
+                                            <th>Dosis</th>
+                                            <th>Duración</th>
+                                            <th>Stock Actual</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for medicine in prescription.medicines.all %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ medicine.medicine.name }}</strong><br>
+                                                <small class="text-muted">{{ medicine.medicine.category.name }}</small>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-primary">{{ medicine.quantity }}</span>
+                                            </td>
+                                            <td>{{ medicine.dosage }}</td>
+                                            <td>{{ medicine.duration }}</td>
+                                            <td>
+                                                <span class="badge {% if medicine.medicine.stock_quantity >= medicine.quantity %}badge-success{% else %}badge-danger{% endif %}">
+                                                    {{ medicine.medicine.stock_quantity }} unidades
+                                                </span>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Instrucciones -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5>Instrucciones para el Paciente</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                {{ prescription.instructions }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de la Receta -->
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h5>Información de la Receta</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p><strong>Estado:</strong> 
+                                        {% if prescription.status == 'pendiente' %}
+                                        <span class="badge badge-warning">Pendiente</span>
+                                        {% elif prescription.status == 'completada' %}
+                                        <span class="badge badge-success">Completada</span>
+                                        {% else %}
+                                        <span class="badge badge-danger">Cancelada</span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Fecha de Creación:</strong> {{ prescription.created_at|date:"d/m/Y H:i" }}</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <p><strong>Última Actualización:</strong> {{ prescription.updated_at|date:"d/m/Y H:i" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

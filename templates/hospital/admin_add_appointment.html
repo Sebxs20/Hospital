@@ -50,6 +50,14 @@
 <!------ add appointment page by admin(sumit)  ---------->
 <form method="post">
   {% csrf_token %}
+
+  {% if appointmentForm.errors %}
+  <div class="alert alert-danger">
+    <strong>Errores en el formulario:</strong>
+    {{ appointmentForm.errors }}
+  </div>
+  {% endif %}
+
   <div class="container register-form">
     <div class="form">
       <div class="note">
@@ -59,28 +67,24 @@
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
+              <label>Descripción:</label>
               {% render_field appointmentForm.description class="form-control" placeholder="Description" %}
+              {{ appointmentForm.description.errors }}
             </div>
             <div class="form-group">
-              {% render_field appointmentForm.doctorId class="form-control" placeholder="doctor" %}
+              <label>Doctor:</label>
+              {% render_field appointmentForm.doctor class="form-control" %}
             </div>
             <div class="form-group">
-              {% render_field appointmentForm.patientId class="form-control" placeholder="patient" %}
+              <label>Paciente:</label>
+              {% render_field appointmentForm.patient class="form-control" %}
             </div>
-
           </div>
-
         </div>
         <button type="submit" class="btnSubmit">Subir</button>
       </div>
     </div>
   </div>
 </form>
-
-<!--
-developed By : sumit kumar
-facebook : fb.com/sumit.luv
-youtube : youtube.com/lazycoders
--->
 
 {% endblock content %}

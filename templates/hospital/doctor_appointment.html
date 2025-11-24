@@ -7,8 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
   <link href="http://netdna.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
 
   <style type="text/css">
     a:link {
@@ -23,6 +22,12 @@
 
     .order-card {
       color: #fff;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .order-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
 
     .bg-c-blue {
@@ -33,14 +38,23 @@
       background: linear-gradient(45deg, #2ed8b6, #59e0c5);
     }
 
+    .bg-c-purple {
+      background: linear-gradient(45deg, #a64dff, #c285ff);
+    }
+
+    .bg-c-orange {
+      background: linear-gradient(45deg, #FF9800, #FFB74D);
+    }
+
     .card {
-      border-radius: 5px;
+      border-radius: 15px;
       -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
       box-shadow: 0 1px 2.94px 0.06px rgba(4, 26, 55, 0.16);
       border: none;
       margin-bottom: 30px;
       -webkit-transition: all 0.3s ease-in-out;
       transition: all 0.3s ease-in-out;
+      height: 140px;
     }
 
     .card .card-block {
@@ -48,7 +62,8 @@
     }
 
     .order-card i {
-      font-size: 26px;
+      font-size: 32px;
+      opacity: 0.8;
     }
 
     .f-left {
@@ -58,44 +73,96 @@
     .f-right {
       float: right;
     }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .card-link {
+      display: block;
+      color: white;
+      text-decoration: none;
+    }
+
+    .card-link:hover {
+      color: white;
+      text-decoration: none;
+    }
+
+    .stats-number {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .card-description {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
   </style>
 </head>
 
-  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4 col-xl-6">
-        <div class="card bg-c-blue order-card">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div class="container">
+  
+  <!-- Primera Fila de Acciones -->
+  <div class="row">
+    <div class="col-md-4 col-xl-4">
+      <div class="card bg-c-blue order-card">
+        <a href="{% url 'doctor-view-appointment' %}" class="card-link">
           <div class="card-block">
-            <a href="/doctor-view-appointment">
-              <h6 class="m-b-20">Ver tus citas</h6>
-            </a>
-            <br>
-            <h2 class="text-right"><i class="fas fa-calendar f-left"></i></h2>
-
+            <h6 class="m-b-20"><i class="fas fa-eye"></i> Ver Citas</h6>
+            <p class="card-description">Consulta y gestiona todas tus citas programadas</p>
+            <h2 class="text-right"><i class="fas fa-calendar-alt f-left"></i></h2>
           </div>
-        </div>
+        </a>
       </div>
+    </div>
 
-      <div class="col-md-4 col-xl-6">
-        <div class="card bg-c-green order-card">
+    <div class="col-md-4 col-xl-4">
+      <div class="card bg-c-purple order-card">
+        <a href="{% url 'doctor-add-appointment' %}" class="card-link">
           <div class="card-block">
-            <a href="/doctor-delete-appointment">
-              <h6 class="m-b-20">Eliminar Citas</h6>
-            </a>
-            <br>
-            <h2 class="text-right"><i class="fas fa-eject f-left"></i></h2>
+            <h6 class="m-b-20"><i class="fas fa-plus-circle"></i> Agendar Cita</h6>
+            <p class="card-description">Crea una nueva cita para tus pacientes</p>
+            <h2 class="text-right"><i class="fas fa-calendar-plus f-left"></i></h2>
           </div>
-        </div>
+        </a>
       </div>
+    </div>
 
-
+    <div class="col-md-4 col-xl-4">
+      <div class="card bg-c-green order-card">
+        <a href="{% url 'doctor-view-patient' %}" class="card-link">
+          <div class="card-block">
+            <h6 class="m-b-20"><i class="fas fa-users"></i> Mis Pacientes</h6>
+            <p class="card-description">Ver lista de pacientes asignados</p>
+            <h2 class="text-right"><i class="fas fa-user-friends f-left"></i></h2>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
-  <!--
-  developed By : sumit kumar
-  facebook : fb.com/sumit.luv
-  youtube : youtube.com/lazycoders
-  -->
+</div>
+
 <br><br><br><br><br><br><br>
+
+<!-- Script para efectos hover -->
+<script>
+$(document).ready(function(){
+    $('.order-card').hover(
+        function(){
+            $(this).css('transform', 'translateY(-5px)');
+        },
+        function(){
+            $(this).css('transform', 'translateY(0)');
+        }
+    );
+});
+</script>
+
 {% endblock content %}

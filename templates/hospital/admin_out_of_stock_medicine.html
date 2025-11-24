@@ -1,0 +1,88 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br><br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" style="background: linear-gradient(45deg, #f44336, #ef5350); color: white;">
+                    <h4 class="text-center">
+                        <i class="fa fa-times-circle"></i> Medicamentos Agotados
+                    </h4>
+                    <p class="text-center mb-0">Stock igual a cero</p>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="{% url 'admin-medicine' %}" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Volver al Dashboard
+                        </a>
+                        <a href="{% url 'admin-view-medicine' %}" class="btn btn-primary">
+                            <i class="fa fa-list"></i> Ver Todo el Inventario
+                        </a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                    <th>Precio</th>
+                                    <th>Proveedor</th>
+                                    <th>Último Movimiento</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicine in medicines %}
+                                <tr>
+                                    <td>{{ medicine.name }}</td>
+                                    <td>{{ medicine.category.name }}</td>
+                                    <td>
+                                        <span class="badge badge-danger" style="font-size: 14px;">
+                                            AGOTADO
+                                        </span>
+                                    </td>
+                                    <td>${{ medicine.price }}</td>
+                                    <td>{{ medicine.supplier }}</td>
+                                    <td>
+                                        {% with medicine.medicinemovement_set.last as last_movement %}
+                                            {% if last_movement %}
+                                                {{ last_movement.movement_date|date:"d/m/Y" }}
+                                            {% else %}
+                                                Sin movimientos
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'admin-update-medicine' medicine.id %}" class="btn btn-warning btn-sm">
+                                                <i class="fa fa-edit"></i> Reabastecer
+                                            </a>
+                                            <a href="{% url 'admin-medicine-movement' medicine.id %}" class="btn btn-info btn-sm">
+                                                <i class="fa fa-exchange-alt"></i> Movimientos
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        <div class="alert alert-success">
+                                            <i class="fa fa-check-circle"></i> ¡Excelente! No hay medicamentos agotados.
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

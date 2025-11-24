@@ -20,31 +20,28 @@
     }
   </style>
 </head>
-<!--
-written By : sumit kumar
-facebook : fb.com/sumit.luv
--->
+
 <div class="container">
   <div class="panel panel-primary">
     <div class="panel-heading">
-      <h6 class="panel-title">Doctors &nbsp Applied For Registration</h6>
+      <h6 class="panel-title">Doctores &nbsp Solicitando Registro</h6>
     </div>
     <table class="table table-hover" id="dev-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Profile Picture</th>
-          <th>Mobile</th>
-          <th>Address</th>
-          <th>Department</th>
-          <th>Approve</th>
-          <th>Reject</th>
+          <th>Nombre</th>
+          <th>Foto de Perfil</th>
+          <th>Celular</th>
+          <th>Dirección</th>
+          <th>Departamento</th>
+          <th>Aprobar</th>
+          <th>Rechazar</th>
         </tr>
       </thead>
       {% for d in doctors %}
       <tr>
         <td> {{d.get_name}}</td>
-        <td> <img src="{% static d.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td>
+        <td> <img src="{% static d.profile_pic.url %}" alt="Foto de Perfil" height="40px" width="40px" /></td>
         <td>{{d.mobile}}</td>
         <td>{{d.address}}</td>
         <td>{{d.department}}</td>
@@ -54,13 +51,6 @@ facebook : fb.com/sumit.luv
       {% endfor %}
     </table>
   </div>
-
-
 </div>
-<!--
-developed By : sumit kumar
-facebook : fb.com/sumit.luv
-youtube : youtube.com/lazycoders
--->
 
 {% endblock content %}

@@ -112,7 +112,7 @@
 
 <br><br><br>
 
-{%if is_discharged%}
+{% if is_discharged %}
 <div class="invoice-box">
   <table cellpadding="0" cellspacing="0">
     <tr class="top">
@@ -120,14 +120,13 @@
         <table>
           <tr>
             <td class="title">
-              <h1>Hospital Management</h1>
+              <h1>Gestión Hospitalaria</h1>
             </td>
 
             <td>
-
-              Admit Date: {{admitDate}}<br>
-              Release Date: {{releaseDate}}<br>
-              Days Spent: {{daySpent}}
+              Fecha de Ingreso: {{admitDate}}<br>
+              Fecha de Alta: {{releaseDate}}<br>
+              Días en el Hospital: {{daySpent}}
             </td>
           </tr>
         </table>
@@ -139,15 +138,14 @@
         <table>
           <tr>
             <td>
-              Patient Name : {{patientName}}<br>
-              Patient Mobile : {{mobile}}<br>
-              Patient Addres : {{address}}<br>
+              Nombre del Paciente: {{patientName}}<br>
+              Teléfono del Paciente: {{mobile}}<br>
+              Dirección del Paciente: {{address}}<br>
             </td>
 
             <td>
-              Doctor Name :<br>
+              Nombre del Doctor:<br>
               {{assignedDoctorName}}<br>
-
             </td>
           </tr>
         </table>
@@ -156,12 +154,9 @@
 
     <tr class="heading">
       <td>
-        Disease and Symptoms
+        Enfermedad y Síntomas
       </td>
-      <td>
-
-      </td>
-
+      <td></td>
     </tr>
 
     <tr class="details">
@@ -169,19 +164,20 @@
         {{symptoms}}
       </td>
     </tr>
+
     <tr class="heading">
       <td>
-        Item
+        Concepto
       </td>
 
       <td>
-        Price
+        Precio
       </td>
     </tr>
 
     <tr class="item">
       <td>
-        Room Charge of {{daySpent}} Days
+        Cargo de Habitación por {{daySpent}} días
       </td>
 
       <td>
@@ -191,7 +187,7 @@
 
     <tr class="item">
       <td>
-        Doctor Fee
+        Honorarios del Doctor
       </td>
 
       <td>
@@ -201,7 +197,7 @@
 
     <tr class="item">
       <td>
-        Medicine Cost
+        Costo de Medicinas
       </td>
 
       <td>
@@ -211,7 +207,7 @@
 
     <tr class="item last">
       <td>
-        Other Charge
+        Otros Cargos
       </td>
 
       <td>
@@ -223,28 +219,24 @@
       <td></td>
 
       <td>
-        Total Rupees : {{total}}
+        Total (Rupias): {{total}}
       </td>
     </tr>
 
   </table>
 </div>
+
 <br><br>
+
 <div class="download">
-  <a style="background:red; width:500px;" href="{% url 'download-pdf' patientId  %}">Download</a>
+  <a style="background:red; width:500px;" href="{% url 'download-pdf' patientId %}">Descargar</a>
 </div>
 
+{% else %}
+<h5 style="text-align:center;">¡Aún no has sido dado de alta por el hospital!</h5>
+<h5 style="text-align:center;">¡Tu tratamiento continúa!</h5><br><br>
+<h6 style="text-align:center;">Cuando seas dado de alta, podrás descargar tu factura.</h6>
+{% endif %}
 
-
-{%else%}
-<h5 style="text-align:center;">You Are Not Discharged By Hospital !</h5>
-<h5 style="text-align:center;">Your Treatment Is Going On !</h5><br><br>
-<h6 style="text-align:center;">When You Will Be Discahrged. You Can Download Invoice.</h6>
-{%endif%}
-<!--
-developed By : sumit kumar
-facebook : fb.com/sumit.luv
-youtube : youtube.com/lazycoders
--->
 <br><br><br><br><br><br><br><br>
 {% endblock content %}

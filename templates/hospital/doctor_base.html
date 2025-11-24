@@ -12,8 +12,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
-
-
   <style media="screen">
     a:link {
       text-decoration: none;
@@ -27,9 +25,6 @@
       color: white;
     }
 
-
-
-
     /*---------------------------------------
        Social section
     -----------------------------------------*/
@@ -39,14 +34,11 @@
       margin: 0px;
     }
 
-
     #ftr {
-
       padding: 20px;
     }
 
     .fa {
-
       font-size: 23px;
       width: 60px;
       text-align: center;
@@ -83,17 +75,12 @@
 
     p {
       text-align: center;
-
     }
-
-
-
-
 
     body {
-
       padding-left: 240px;
     }
+
     main {
       position: relative;
       height: 100vh;
@@ -109,11 +96,13 @@
       z-index: 5;
       outline: none;
     }
+
     .menu .avatar {
       background: rgba(0, 0, 0, 0.1);
       padding: 2em 0.5em;
       text-align: center;
     }
+
     .menu .avatar img {
       width: 100px;
       border-radius: 50%;
@@ -121,15 +110,18 @@
       border: 4px solid #ffea92;
       box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
     }
+
     .menu .avatar h2 {
       font-weight: normal;
       margin-bottom: 0;
     }
+
     .menu ul {
       list-style: none;
       padding: 0.5em 0;
       margin: 0;
     }
+
     .menu ul li {
       padding: 0.5em 1em 0.5em 3em;
       font-size: 0.95em;
@@ -140,25 +132,35 @@
       transition: all 0.15s linear;
       cursor: pointer;
     }
+
     .menu ul li.icon-dashboard {
       background-image: url("http://www.entypo.com/images//gauge.svg");
     }
+
     .menu ul li.icon-customers {
       background-image: url("http://www.entypo.com/images//briefcase.svg");
     }
+
     .menu ul li.icon-users {
       background-image: url("http://www.entypo.com/images//users.svg");
     }
+
     .menu ul li.icon-calendar {
       background-image: url("http://www.entypo.com/images//calendar.svg");
+    }
+
+    .menu ul li.icon-prescription {
+      background-image: url("https://www.entypo.com/images//documents.svg");
     }
 
     .menu ul li:hover {
       background-color: rgba(0, 0, 0, 0.1);
     }
+
     .menu ul li:focus {
       outline: none;
     }
+
     @media screen and (max-width: 900px) and (min-width: 400px) {
       body {
         padding-left: 90px;
@@ -223,6 +225,7 @@
         transform: translate3d(0px, -50%, 0);
       }
     }
+
     @media screen and (max-width: 400px) {
       body {
         padding-left: 0;
@@ -268,7 +271,6 @@
         pointer-events: none;
       }
     }
-
   </style>
 </head>
 
@@ -286,6 +288,8 @@
       <li tabindex="0" class="icon-dashboard"> <a style="color:white; text-decoration:none;" href="/doctor-dashboard"><span>Panel principal</span></a> </li>
       <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/doctor-patient"><span>Pacientes</span></a></li>
       <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/doctor-appointment"><span>Citas</span></a></li>
+      <!-- NUEVO ITEM PARA RECETAS MÉDICAS -->
+      <li tabindex="0" class="icon-prescription"> <a style="color:white; text-decoration:none;" href="/doctor-prescription"><span>Recetas Médicas</span></a></li>
     </ul>
   </nav>
   <main>
@@ -298,7 +302,6 @@
         </button>
         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
           <div class="navbar-nav" style=" margin-left: 90%;">
-
             <a href="/logout" class="nav-item nav-link">Cerrar sesión</a>
           </div>
         </div>
@@ -323,7 +326,7 @@
         <div class="row">
           <div class="col-md-12 col-sm-12">
             <div style="color:#ffffff;" class="wow fadeInUp footer-copyright">
-              <p>Hecho  <br>
+              <p>Hecho en México  <br>
                 Copyright &copy; 2025 LUJASE </p>
             </div>
           </div>

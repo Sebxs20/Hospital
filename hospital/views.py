@@ -9,28 +9,24 @@ from datetime import datetime,timedelta,date
 from django.conf import settings
 from django.db.models import Q
 
-# Create your views here.
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'hospital/index.html')
 
 
-#for showing signup/login button for admin(by sumit)
 def adminclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'hospital/adminclick.html')
 
 
-#for showing signup/login button for doctor(by sumit)
 def doctorclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return render(request,'hospital/doctorclick.html')
 
 
-#for showing signup/login button for patient(by sumit)
 def patientclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
@@ -128,11 +124,6 @@ def afterlogin_view(request):
 
 
 
-
-
-
-
-
 #---------------------------------------------------------------------------------
 #------------------------ ADMIN RELATED VIEWS START ------------------------------
 #---------------------------------------------------------------------------------
@@ -142,15 +133,18 @@ def admin_dashboard_view(request):
     #for both table in admin dashboard
     doctors=models.Doctor.objects.all().order_by('-id')
     patients=models.Patient.objects.all().order_by('-id')
-    #for three cards
+    
+    #for three cards - CORREGIDO
     doctorcount=models.Doctor.objects.all().filter(status=True).count()
     pendingdoctorcount=models.Doctor.objects.all().filter(status=False).count()
 
     patientcount=models.Patient.objects.all().filter(status=True).count()
     pendingpatientcount=models.Patient.objects.all().filter(status=False).count()
 
-    appointmentcount=models.Appointment.objects.all().filter(status=True).count()
-    pendingappointmentcount=models.Appointment.objects.all().filter(status=False).count()
+    # CONTADORES DE CITAS CORREGIDOS
+    appointmentcount=models.Appointment.objects.all().count()  # Todas las citas
+    pendingappointmentcount=models.Appointment.objects.all().filter(status='pending').count()  # Solo pendientes
+    
     mydict={
     'doctors':doctors,
     'patients':patients,
@@ -158,8 +152,8 @@ def admin_dashboard_view(request):
     'pendingdoctorcount':pendingdoctorcount,
     'patientcount':patientcount,
     'pendingpatientcount':pendingpatientcount,
-    'appointmentcount':appointmentcount,
-    'pendingappointmentcount':pendingappointmentcount,
+    'appointmentcount':appointmentcount,  # Total de citas
+    'pendingappointmentcount':pendingappointmentcount,  # Citas pendientes
     }
     return render(request,'hospital/admin_dashboard.html',context=mydict)
 
@@ -187,6 +181,7 @@ def delete_doctor_from_hospital_view(request,pk):
     user=models.User.objects.get(id=doctor.user_id)
     user.delete()
     doctor.delete()
+    messages.success(request, '✅ Doctor eliminado exitosamente!')
     return redirect('admin-view-doctor')
 
 
@@ -210,7 +205,10 @@ def update_doctor_view(request,pk):
             doctor=doctorForm.save(commit=False)
             doctor.status=True
             doctor.save()
+            messages.success(request, '✅ Doctor actualizado exitosamente!')
             return redirect('admin-view-doctor')
+        else:
+            messages.error(request, '❌ Error en el formulario. Por favor verifica los datos.')
     return render(request,'hospital/admin_update_doctor.html',context=mydict)
 
 
@@ -238,9 +236,11 @@ def admin_add_doctor_view(request):
             my_doctor_group = Group.objects.get_or_create(name='DOCTOR')
             my_doctor_group[0].user_set.add(user)
 
-        return HttpResponseRedirect('admin-view-doctor')
+            messages.success(request, '✅ Doctor agregado exitosamente!')
+            return HttpResponseRedirect('admin-view-doctor')
+        else:
+            messages.error(request, '❌ Error en el formulario. Por favor verifica los datos.')
     return render(request,'hospital/admin_add_doctor.html',context=mydict)
-
 
 
 
@@ -501,29 +501,39 @@ def admin_appointment_view(request):
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_view_appointment_view(request):
-    appointments=models.Appointment.objects.all().filter(status=True)
-    return render(request,'hospital/admin_view_appointment.html',{'appointments':appointments})
+    appointments = models.Appointment.objects.all().order_by('-id')
+    print(f"DEBUG: Encontradas {appointments.count()} citas")  # Debug
+    for appointment in appointments:
+        print(f"DEBUG: Cita - Doctor: {appointment.doctorName}, Paciente: {appointment.patientName}, Estado: {appointment.status}")
+    
+    return render(request, 'hospital/admin_view_appointment.html', {'appointments': appointments})
 
 
 
 @login_required(login_url='adminlogin')
 @user_passes_test(is_admin)
 def admin_add_appointment_view(request):
-    appointmentForm=forms.AppointmentForm()
-    mydict={'appointmentForm':appointmentForm,}
-    if request.method=='POST':
-        appointmentForm=forms.AppointmentForm(request.POST)
+    appointmentForm = forms.AppointmentForm()
+    mydict = {'appointmentForm': appointmentForm}
+    
+    if request.method == 'POST':
+        appointmentForm = forms.AppointmentForm(request.POST)
         if appointmentForm.is_valid():
-            appointment=appointmentForm.save(commit=False)
-            appointment.doctorId=request.POST.get('doctorId')
-            appointment.patientId=request.POST.get('patientId')
-            appointment.doctorName=models.User.objects.get(id=request.POST.get('doctorId')).first_name
-            appointment.patientName=models.User.objects.get(id=request.POST.get('patientId')).first_name
-            appointment.status=True
+            appointment = appointmentForm.save(commit=False)
+            
+            # Obtener doctor y paciente del formulario
+            doctor = appointmentForm.cleaned_data['doctor']
+            patient = appointmentForm.cleaned_data['patient']
+            appointment.doctorId = doctor.id
+            appointment.patientId = patient.id
+            appointment.doctorName = doctor.get_name
+            appointment.patientName = patient.get_name
+            appointment.status = 'pending'  # ← CAMBIAR A 'pending'
+            
             appointment.save()
-        return HttpResponseRedirect('admin-view-appointment')
-    return render(request,'hospital/admin_add_appointment.html',context=mydict)
-
+            return redirect('admin-view-appointment')
+    
+    return render(request, 'hospital/admin_add_appointment.html', context=mydict)
 
 
 @login_required(login_url='adminlogin')
@@ -598,7 +608,44 @@ def doctor_patient_view(request):
     return render(request,'hospital/doctor_patient.html',context=mydict)
 
 
-
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_add_appointment_view(request):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
+    
+    # Obtener solo los pacientes asignados a este doctor
+    my_patients = models.Patient.objects.filter(assignedDoctorId=doctor.user_id, status=True)
+    
+    if request.method == 'POST':
+        description = request.POST.get('description')
+        patient_id = request.POST.get('patientId')
+        
+        try:
+            patient = models.Patient.objects.get(id=patient_id)
+            
+            # Crear la cita
+            appointment = models.Appointment(
+                doctorId=doctor.id,
+                patientId=patient.id,
+                doctorName=doctor.get_name,
+                patientName=patient.get_name,
+                description=description,
+                status='pending'
+            )
+            appointment.save()
+            
+            messages.success(request, f'✅ Cita agendada exitosamente con {patient.get_name}')
+            return redirect('doctor-view-appointment')
+            
+        except models.Patient.DoesNotExist:
+            messages.error(request, "❌ Paciente no encontrado")
+        except Exception as e:
+            messages.error(request, f"❌ Error al agendar cita: {str(e)}")
+    
+    return render(request, 'hospital/doctor_add_appointment.html', {
+        'doctor': doctor,
+        'my_patients': my_patients
+    })
 
 
 @login_required(login_url='doctorlogin')
@@ -640,15 +687,73 @@ def doctor_appointment_view(request):
 @login_required(login_url='doctorlogin')
 @user_passes_test(is_doctor)
 def doctor_view_appointment_view(request):
-    doctor=models.Doctor.objects.get(user_id=request.user.id) #for profile picture of doctor in sidebar
-    appointments=models.Appointment.objects.all().filter(status=True,doctorId=request.user.id)
-    patientid=[]
-    for a in appointments:
-        patientid.append(a.patientId)
-    patients=models.Patient.objects.all().filter(status=True,user_id__in=patientid)
-    appointments=zip(appointments,patients)
-    return render(request,'hospital/doctor_view_appointment.html',{'appointments':appointments,'doctor':doctor})
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
+    
+    # Filtrar citas por el ID del doctor actual
+    appointments = models.Appointment.objects.filter(
+        doctorId=doctor.id
+    ).order_by('-appointmentDate')
+    
+    # Obtener información de pacientes y verificar recetas
+    appointment_data = []
+    for appointment in appointments:
+        try:
+            patient = models.Patient.objects.get(id=appointment.patientId)
+            
+            # VERIFICACIÓN DIRECTA: Usar el campo prescription
+            has_prescription = appointment.prescription is not None
+            
+            # DEBUG: Mostrar en consola para verificar
+            print(f"Cita {appointment.id} - Paciente: {patient.get_name} - Receta: {has_prescription}")
+            if has_prescription:
+                print(f"   Receta ID: {appointment.prescription.id}")
+            
+            appointment_data.append({
+                'appointment': appointment,
+                'patient': patient,
+                'has_prescription': has_prescription
+            })
+        except models.Patient.DoesNotExist:
+            continue
+    
+    return render(request, 'hospital/doctor_view_appointment.html', {
+        'appointment_data': appointment_data, 
+        'doctor': doctor
+    })
 
+from django.contrib import messages
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def update_appointment_status_view(request, pk, status):
+    try:
+        appointment = models.Appointment.objects.get(id=pk)
+        doctor = models.Doctor.objects.get(user_id=request.user.id)
+        
+        # Verificar que la cita pertenece al doctor actual
+        if appointment.doctorId == doctor.id:
+            if status in ['done', 'cancelled', 'pending']:
+                appointment.status = status
+                appointment.save()
+                
+                # Mensajes según la acción
+                if status == 'done':
+                    messages.success(request, f'✅ Cita de {appointment.patientName} marcada como ATENDIDA')
+                elif status == 'cancelled':
+                    messages.warning(request, f'❌ Cita de {appointment.patientName} CANCELADA')
+                elif status == 'pending':
+                    messages.info(request, f'🔄 Cita de {appointment.patientName} reactivada como PENDIENTE')
+            else:
+                messages.error(request, "Estado no válido")
+        else:
+            messages.error(request, "No tienes permiso para modificar esta cita")
+            
+    except models.Appointment.DoesNotExist:
+        messages.error(request, "Cita no encontrada")
+    except models.Doctor.DoesNotExist:
+        messages.error(request, "Doctor no encontrado")
+    
+    return redirect('doctor-view-appointment')
 
 
 @login_required(login_url='doctorlogin')
@@ -767,9 +872,17 @@ def search_doctor_view(request):
 @login_required(login_url='patientlogin')
 @user_passes_test(is_patient)
 def patient_view_appointment_view(request):
-    patient=models.Patient.objects.get(user_id=request.user.id) #for profile picture of patient in sidebar
-    appointments=models.Appointment.objects.all().filter(patientId=request.user.id)
-    return render(request,'hospital/patient_view_appointment.html',{'appointments':appointments,'patient':patient})
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    
+    # Filtrar citas por el ID del paciente actual
+    appointments = models.Appointment.objects.filter(
+        patientId=patient.id
+    ).order_by('-appointmentDate')
+    
+    return render(request, 'hospital/patient_view_appointment.html', {
+        'appointments': appointments, 
+        'patient': patient
+    })
 
 
 
@@ -812,12 +925,6 @@ def patient_discharge_view(request):
 #---------------------------------------------------------------------------------
 
 
-
-
-
-
-
-
 #---------------------------------------------------------------------------------
 #------------------------ ABOUT US AND CONTACT US VIEWS START ------------------------------
 #---------------------------------------------------------------------------------
@@ -842,7 +949,490 @@ def contactus_view(request):
 #---------------------------------------------------------------------------------
 
 
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_medicine_view(request):
+    # Calcular estadísticas
+    total_medicines = models.Medicine.objects.count()
+    
+    # Medicamentos con stock bajo (menos de 20 unidades)
+    low_stock = models.Medicine.objects.filter(stock_quantity__lt=20, stock_quantity__gt=0).count()
+    
+    # Medicamentos agotados (stock = 0)
+    out_of_stock = models.Medicine.objects.filter(stock_quantity=0).count()
+    
+    # Medicamentos próximos a vencer (en los próximos 30 días)
+    today = date.today()
+    next_month = today + timedelta(days=30)
+    expired_soon = models.Medicine.objects.filter(
+        expiry_date__range=[today, next_month]
+    ).count()
+    
+    context = {
+        'total_medicines': total_medicines,
+        'low_stock': low_stock,
+        'out_of_stock': out_of_stock,
+        'expired_soon': expired_soon,
+    }
+    
+    return render(request, 'hospital/admin_medicine.html', context)
 
-#Developed By : sumit kumar
-#facebook : fb.com/sumit.luv
-#Youtube :youtube.com/lazycoders
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_view_medicine_view(request):
+    medicines = models.Medicine.objects.all().order_by('name')
+    return render(request, 'hospital/admin_view_medicine.html', {'medicines': medicines})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_add_medicine_view(request):
+    medicineForm = forms.MedicineForm()
+    
+    if request.method == 'POST':
+        medicineForm = forms.MedicineForm(request.POST)
+        if medicineForm.is_valid():
+            medicine = medicineForm.save()
+            
+            # Registrar movimiento inicial
+            models.MedicineMovement.objects.create(
+                medicine=medicine,
+                movement_type='entrada',
+                quantity=medicine.stock_quantity,
+                previous_stock=0,
+                new_stock=medicine.stock_quantity,
+                reason='Stock inicial',
+                performed_by=request.user
+            )
+            
+            messages.success(request, f'Medicamento {medicine.name} agregado exitosamente')
+            return redirect('admin-view-medicine')
+    
+    return render(request, 'hospital/admin_add_medicine.html', {'medicineForm': medicineForm})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_update_medicine_view(request, pk):
+    medicine = models.Medicine.objects.get(id=pk)
+    medicineForm = forms.MedicineForm(instance=medicine)
+    
+    if request.method == 'POST':
+        medicineForm = forms.MedicineForm(request.POST, instance=medicine)
+        if medicineForm.is_valid():
+            medicineForm.save()
+            messages.success(request, f'Medicamento {medicine.name} actualizado')
+            return redirect('admin-view-medicine')
+    
+    return render(request, 'hospital/admin_update_medicine.html', {
+        'medicineForm': medicineForm,
+        'medicine': medicine
+    })
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_medicine_movement_view(request, pk):
+    medicine = models.Medicine.objects.get(id=pk)
+    movements = models.MedicineMovement.objects.filter(medicine=medicine).order_by('-movement_date')
+    
+    if request.method == 'POST':
+        movement_type = request.POST.get('movement_type')
+        quantity = int(request.POST.get('quantity'))
+        reason = request.POST.get('reason')
+        notes = request.POST.get('notes')
+        
+        previous_stock = medicine.stock_quantity
+        
+        # Crear movimiento
+        movement = models.MedicineMovement(
+            medicine=medicine,
+            movement_type=movement_type,
+            quantity=quantity,
+            previous_stock=previous_stock,
+            new_stock=previous_stock + quantity if movement_type == 'entrada' else previous_stock - quantity,
+            reason=reason,
+            performed_by=request.user,
+            notes=notes
+        )
+        movement.save()
+        
+        messages.success(request, f'Movimiento registrado para {medicine.name}')
+        return redirect('admin-medicine-movement', pk=pk)
+    
+    return render(request, 'hospital/admin_medicine_movement.html', {
+        'medicine': medicine,
+        'movements': movements
+    })
+
+# Vistas para Doctor
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_medicine_view(request):
+    medicines = models.Medicine.objects.filter(is_active=True).order_by('name')
+    low_stock = medicines.filter(stock_quantity__lte=models.F('min_stock'))
+    expired = medicines.filter(expiry_date__lt=date.now().date())
+    
+    return render(request, 'hospital/doctor_medicine.html', {
+        'medicines': medicines,
+        'low_stock': low_stock,
+        'expired': expired
+    })
+    
+from django.shortcuts import render, get_object_or_404, redirect 
+from .models import Medicine
+@login_required
+def admin_delete_medicine_view(request, pk):
+    medicine = get_object_or_404(Medicine, id=pk)
+    
+    if request.method == 'POST':
+        try:
+            medicine_name = medicine.name
+            medicine.delete()
+            messages.success(request, f'Medicamento {medicine_name} eliminado exitosamente!')
+            return redirect('admin-view-medicine')
+        except Exception as e:
+            messages.error(request, f'Error al eliminar medicamento: {str(e)}')
+    
+    return render(request, 'hospital/admin_delete_medicine.html', {'medicine': medicine})
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_low_stock_medicine_view(request):
+    # Medicamentos con stock bajo (menos de 20 unidades pero mayor a 0)
+    low_stock_medicines = models.Medicine.objects.filter(
+        stock_quantity__lt=20, 
+        stock_quantity__gt=0
+    ).order_by('stock_quantity')
+    
+    return render(request, 'hospital/admin_low_stock_medicine.html', {
+        'medicines': low_stock_medicines
+    })
+    
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_out_of_stock_medicine_view(request):
+    # Medicamentos con stock = 0
+    out_of_stock_medicines = models.Medicine.objects.filter(
+        stock_quantity=0
+    ).order_by('name')
+    
+    return render(request, 'hospital/admin_out_of_stock_medicine.html', {
+        'medicines': out_of_stock_medicines
+    })
+    
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_prescription_view(request):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
+    return render(request, 'hospital/doctor_prescription.html', {'doctor': doctor})
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_create_prescription_view(request):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
+    
+    # Obtener paciente desde la URL si viene de una cita
+    patient_id = request.GET.get('patient_id')
+    appointment_id = request.GET.get('appointment_id')
+    
+    # Solo pacientes asignados a este doctor
+    my_patients = models.Patient.objects.filter(assignedDoctorId=doctor.user_id, status=True)
+    
+    # CARGAR TODOS LOS MEDICAMENTOS SIN FILTROS
+    medicines = models.Medicine.objects.all().order_by('name')
+    
+    if request.method == 'POST':
+        try:
+            print("DEBUG: Iniciando creación de receta...")
+            
+            # Validar que se haya seleccionado un paciente
+            patient_id_post = request.POST.get('patient')
+            if not patient_id_post:
+                messages.error(request, '❌ Debe seleccionar un paciente')
+                return redirect('doctor-create-prescription')
+            
+            # Crear la receta
+            prescription = models.Prescription(
+                patient_id=patient_id_post,
+                doctor=doctor,
+                diagnosis=request.POST.get('diagnosis', ''),
+                symptoms=request.POST.get('symptoms', ''),
+                instructions=request.POST.get('instructions', '')
+            )
+            prescription.save()
+            print(f"DEBUG: Receta #{prescription.id} creada")
+            
+            # Procesar medicamentos
+            medicine_ids = request.POST.getlist('medicines[]')
+            quantities = request.POST.getlist('quantities[]')
+            dosages = request.POST.getlist('dosages[]')
+            durations = request.POST.getlist('durations[]')
+            
+            print(f"DEBUG: Medicamentos a procesar: {len(medicine_ids)}")
+            
+            # Validar que haya al menos un medicamento
+            if not medicine_ids or not any(medicine_ids):
+                prescription.delete()
+                messages.error(request, '❌ Debe agregar al menos un medicamento a la receta')
+                return redirect('doctor-create-prescription')
+            
+            # Validar TODOS los medicamentos antes de crear cualquier PrescriptionMedicine
+            for i in range(len(medicine_ids)):
+                if medicine_ids[i] and quantities[i]:
+                    try:
+                        medicine = models.Medicine.objects.get(id=medicine_ids[i])
+                        quantity = int(quantities[i])
+                        
+                        # Validar stock
+                        if medicine.stock_quantity < quantity:
+                            prescription.delete()
+                            messages.error(request, f'❌ Stock insuficiente de {medicine.name}. Stock disponible: {medicine.stock_quantity}')
+                            return redirect('doctor-create-prescription')
+                            
+                    except models.Medicine.DoesNotExist:
+                        prescription.delete()
+                        messages.error(request, f'❌ Medicamento no encontrado')
+                        return redirect('doctor-create-prescription')
+                    except ValueError:
+                        prescription.delete()
+                        messages.error(request, '❌ Cantidad inválida')
+                        return redirect('doctor-create-prescription')
+            
+            # Si pasa la validación, crear los PrescriptionMedicine
+            for i in range(len(medicine_ids)):
+                if medicine_ids[i] and quantities[i]:
+                    medicine = models.Medicine.objects.get(id=medicine_ids[i])
+                    quantity = int(quantities[i])
+                    
+                    # Crear PrescriptionMedicine (esto automáticamente reducirá el stock via el save())
+                    prescription_medicine = models.PrescriptionMedicine(
+                        prescription=prescription,
+                        medicine=medicine,
+                        quantity=quantity,
+                        dosage=dosages[i] if i < len(dosages) else '',
+                        duration=durations[i] if i < len(durations) else ''
+                    )
+                    prescription_medicine.save()
+                    print(f"✅ Medicamento {medicine.name} agregado a receta. Stock reducido en {quantity}")
+            
+            # ASOCIAR LA RECETA CON LA CITA SI VIENE DE UNA
+            if appointment_id:
+                try:
+                    appointment = models.Appointment.objects.get(id=appointment_id)
+                    appointment.prescription = prescription
+                    appointment.status = 'done'  # Marcar cita como atendida
+                    appointment.save()
+                    print(f"✅ Receta {prescription.id} asociada a cita {appointment_id}")
+                except models.Appointment.DoesNotExist:
+                    print(f"❌ Cita {appointment_id} no encontrada")
+            
+            messages.success(request, '✅ Receta médica creada exitosamente y stock actualizado')
+            return redirect('doctor-view-prescription')  # ← ESTA ES LA LÍNEA IMPORTANTE
+            
+        except Exception as e:
+            print(f"DEBUG: Error general: {str(e)}")
+            messages.error(request, f'❌ Error al crear receta: {str(e)}')
+            # Si hay algún error, redirigir de nuevo al formulario
+            return redirect('doctor-create-prescription')
+    
+    # Si viene de una cita, preseleccionar el paciente
+    initial_data = {}
+    if patient_id:
+        try:
+            patient = models.Patient.objects.get(id=patient_id)
+            initial_data['patient'] = patient
+        except models.Patient.DoesNotExist:
+            pass
+    
+    return render(request, 'hospital/doctor_create_prescription.html', {
+        'doctor': doctor,
+        'my_patients': my_patients,
+        'medicines': medicines,
+        'initial_patient': initial_data.get('patient'),
+        'appointment_id': appointment_id
+    })
+
+@login_required(login_url='doctorlogin')
+@user_passes_test(is_doctor)
+def doctor_view_prescription_view(request):
+    doctor = models.Doctor.objects.get(user_id=request.user.id)
+    
+    # Obtener todas las recetas del doctor actual
+    prescriptions = models.Prescription.objects.filter(doctor=doctor).order_by('-created_at')
+    
+    # Contadores para estadísticas
+    total_prescriptions = prescriptions.count()
+    pending_prescriptions = prescriptions.filter(status='pendiente').count()
+    completed_prescriptions = prescriptions.filter(status='completada').count()
+    cancelled_prescriptions = prescriptions.filter(status='cancelada').count()
+    
+    # Aplicar filtros si existen
+    status_filter = request.GET.get('status', 'all')
+    if status_filter != 'all':
+        prescriptions = prescriptions.filter(status=status_filter)
+    
+    return render(request, 'hospital/doctor_view_prescription.html', {
+        'prescriptions': prescriptions,
+        'doctor': doctor,
+        'total_prescriptions': total_prescriptions,
+        'pending_prescriptions': pending_prescriptions,
+        'completed_prescriptions': completed_prescriptions,
+        'cancelled_prescriptions': cancelled_prescriptions,
+        'current_filter': status_filter
+    })
+    
+    
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_prescription_view(request):
+    return render(request, 'hospital/admin_prescription.html')
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_view_prescription_view(request):
+    prescriptions = models.Prescription.objects.all().order_by('-created_at')
+    
+    return render(request, 'hospital/admin_view_prescription.html', {
+        'prescriptions': prescriptions
+    })
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_process_prescription_view(request, pk):
+    prescription = get_object_or_404(models.Prescription, id=pk)
+    
+    if request.method == 'POST' and prescription.status == 'pendiente':
+        try:
+            # Procesar cada medicamento en la receta
+            for prescription_medicine in prescription.medicines.all():
+                medicine = prescription_medicine.medicine
+                quantity = prescription_medicine.quantity
+                
+                # Verificar stock nuevamente antes de procesar
+                if medicine.stock_quantity < quantity:
+                    messages.error(request, f'Stock insuficiente de {medicine.name}. Stock disponible: {medicine.stock_quantity}')
+                    return redirect('admin-view-prescription')
+                
+                # Restar del inventario
+                medicine.stock_quantity -= quantity
+                medicine.save()
+                
+                # Registrar movimiento de salida
+                models.MedicineMovement.objects.create(
+                    medicine=medicine,
+                    movement_type='salida',
+                    quantity=quantity,
+                    previous_stock=medicine.stock_quantity + quantity,
+                    new_stock=medicine.stock_quantity,
+                    reason=f'Receta médica #{prescription.id} - {prescription.patient.get_name}',
+                    performed_by=request.user
+                )
+            
+            # Marcar receta como completada
+            prescription.status = 'completada'
+            prescription.save()
+            
+            messages.success(request, '✅ Receta procesada exitosamente. Stock actualizado.')
+            
+        except Exception as e:
+            messages.error(request, f'❌ Error al procesar receta: {str(e)}')
+    
+    return redirect('admin-view-prescription')
+
+@login_required(login_url='adminlogin')
+@user_passes_test(is_admin)
+def admin_prescription_detail_view(request, pk):
+    prescription = get_object_or_404(models.Prescription, id=pk)
+    
+    return render(request, 'hospital/admin_prescription_detail.html', {
+        'prescription': prescription
+    })
+    
+    
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
+def patient_prescription_view(request):
+    """Vista para que el paciente vea sus recetas"""
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    
+    # Obtener todas las recetas del paciente
+    prescriptions = models.Prescription.objects.filter(patient=patient).order_by('-created_at')
+    
+    # DEBUG: Verificar qué está pasando con los totales
+    print(f"DEBUG: Procesando {prescriptions.count()} recetas para {patient.get_name}")
+    
+    # Forzar actualización de totales para TODAS las recetas
+    for prescription in prescriptions:
+        old_total = prescription.total_amount
+        new_total = 0
+        
+        # Calcular manualmente el total
+        for medicine_item in prescription.medicines.all():
+            if medicine_item.medicine and medicine_item.medicine.price:
+                subtotal = float(medicine_item.medicine.price) * medicine_item.quantity
+                new_total += subtotal
+                print(f"DEBUG: {medicine_item.medicine.name} - {medicine_item.quantity} x ${medicine_item.medicine.price} = ${subtotal}")
+        
+        # Actualizar si es diferente
+        if new_total != float(old_total):
+            prescription.total_amount = new_total
+            prescription.save()
+            print(f"DEBUG: Receta #{prescription.id} actualizada: ${old_total} -> ${new_total}")
+        else:
+            print(f"DEBUG: Receta #{prescription.id} ya tiene total correcto: ${old_total}")
+    
+    # Re-cargar las recetas con los totales actualizados
+    prescriptions = models.Prescription.objects.filter(patient=patient).order_by('-created_at')
+    
+    # Calcular totales
+    total_prescriptions = prescriptions.count()
+    pending_payment = prescriptions.filter(payment_status='pendiente').count()
+    paid_prescriptions = prescriptions.filter(payment_status='pagado').count()
+    
+    # Calcular total pendiente de pago
+    total_pendiente = 0
+    for prescription in prescriptions.filter(payment_status='pendiente'):
+        total_pendiente += float(prescription.total_amount)
+    
+    return render(request, 'hospital/patient_prescription.html', {
+        'patient': patient,
+        'prescriptions': prescriptions,
+        'total_prescriptions': total_prescriptions,
+        'pending_payment': pending_payment,
+        'paid_prescriptions': paid_prescriptions,
+        'total_pendiente': "{:.2f}".format(total_pendiente)
+    })
+
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
+def patient_prescription_detail_view(request, pk):
+    """Vista detallada de una receta para el paciente"""
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    prescription = get_object_or_404(models.Prescription, id=pk, patient=patient)
+    
+    return render(request, 'hospital/patient_prescription_detail.html', {
+        'patient': patient,
+        'prescription': prescription
+    })
+
+@login_required(login_url='patientlogin')
+@user_passes_test(is_patient)
+def patient_payment_view(request, pk):
+    """Vista para simular el pago de una receta"""
+    patient = models.Patient.objects.get(user_id=request.user.id)
+    prescription = get_object_or_404(models.Prescription, id=pk, patient=patient)
+    
+    if request.method == 'POST':
+        # Simular procesamiento de pago
+        import time
+        time.sleep(2)  # Simular delay de procesamiento
+        
+        # Actualizar estado de pago
+        prescription.payment_status = 'pagado'
+        prescription.save()
+        
+        messages.success(request, '✅ Pago procesado exitosamente!')
+        return redirect('patient-prescription-detail', pk=pk)
+    
+    return render(request, 'hospital/patient_payment.html', {
+        'patient': patient,
+        'prescription': prescription
+    })

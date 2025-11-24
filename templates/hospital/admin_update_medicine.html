@@ -1,0 +1,159 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br><br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header" style="background-color: #1a237e; color: white;">
+                    <h4 class="text-center"><b>HOSPITAL LUJASE</b></h4>
+                    <h5 class="text-center">Administrar Medicamento</h5>
+                    <p class="text-center mb-0"><small>Sebastián</small></p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <!-- Mensajes de alerta -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert">
+                                        <span>&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <!-- Mostrar errores del formulario -->
+                        {% if medicineForm.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Por favor corrige los siguientes errores:</strong>
+                                <ul>
+                                    {% for field in medicineForm %}
+                                        {% for error in field.errors %}
+                                            <li>{{ field.label }}: {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in medicineForm.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+
+                        <!-- Campos del formulario -->
+                        <div class="form-group">
+                            <label for="{{ medicineForm.name.id_for_label }}"><strong>Nombre del Medicamento</strong></label>
+                            {{ medicineForm.name }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ medicineForm.description.id_for_label }}"><strong>Descripción</strong></label>
+                            {{ medicineForm.description }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.category.id_for_label }}"><strong>Categoría</strong></label>
+                                    {{ medicineForm.category }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.unit.id_for_label }}"><strong>Unidad</strong></label>
+                                    {{ medicineForm.unit }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.price.id_for_label }}"><strong>Precio</strong></label>
+                                    {{ medicineForm.price }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.stock_quantity.id_for_label }}"><strong>Cantidad en Stock</strong></label>
+                                    {{ medicineForm.stock_quantity }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.min_stock.id_for_label }}"><strong>Stock Mínimo</strong></label>
+                                    {{ medicineForm.min_stock }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.max_stock.id_for_label }}"><strong>Stock Máximo</strong></label>
+                                    {{ medicineForm.max_stock }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ medicineForm.expiry_date.id_for_label }}"><strong>Fecha de Vencimiento</strong></label>
+                                    {{ medicineForm.expiry_date }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ medicineForm.supplier.id_for_label }}"><strong>Proveedor</strong></label>
+                            {{ medicineForm.supplier }}
+                        </div>
+
+                        <div class="form-group">
+                            <label for="{{ medicineForm.location.id_for_label }}"><strong>Ubicación en Almacén</strong></label>
+                            {{ medicineForm.location }}
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg" 
+                                    style="background-color: #1a237e; border-color: #1a237e; padding: 10px 30px;">
+                                <b>Actualizar Medicamento</b>
+                            </button>
+                            <a href="{% url 'admin-view-medicine' %}" class="btn btn-secondary btn-lg" 
+                               style="padding: 10px 30px;">
+                                <b>Cancelar</b>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border: none;
+        border-radius: 10px;
+    }
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+    .form-control {
+        border: 2px solid #1a237e;
+        border-radius: 5px;
+    }
+    .form-control:focus {
+        border-color: #1a237e;
+        box-shadow: 0 0 0 0.2rem rgba(26, 35, 126, 0.25);
+    }
+    label {
+        font-weight: bold;
+        color: #1a237e;
+    }
+</style>
+{% endblock %}

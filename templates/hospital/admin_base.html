@@ -14,7 +14,6 @@
 
   <link rel="stylesheet" href="{% static '/style.css' %}">
 
-
   <style media="screen">
     a:link {
       text-decoration: none;
@@ -28,9 +27,6 @@
       color: white;
     }
 
-
-
-
     /*---------------------------------------
        Social section
     -----------------------------------------*/
@@ -40,14 +36,11 @@
       margin: 0px;
     }
 
-
     #ftr {
-
       padding: 20px;
     }
 
     .fa {
-
       font-size: 23px;
       width: 60px;
       text-align: center;
@@ -84,17 +77,12 @@
 
     p {
       text-align: center;
-
     }
-
-
-
-
 
     body {
-
       padding-left: 240px;
     }
+
     main {
       position: relative;
       height: 100vh;
@@ -110,11 +98,13 @@
       z-index: 5;
       outline: none;
     }
+
     .menu .avatar {
       background: rgba(0, 0, 0, 0.1);
       padding: 2em 0.5em;
       text-align: center;
     }
+
     .menu .avatar img {
       width: 100px;
       border-radius: 50%;
@@ -122,15 +112,18 @@
       border: 4px solid #ffea92;
       box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
     }
+
     .menu .avatar h2 {
       font-weight: normal;
       margin-bottom: 0;
     }
+
     .menu ul {
       list-style: none;
       padding: 0.5em 0;
       margin: 0;
     }
+
     .menu ul li {
       padding: 0.5em 1em 0.5em 3em;
       font-size: 0.95em;
@@ -141,25 +134,39 @@
       transition: all 0.15s linear;
       cursor: pointer;
     }
+
     .menu ul li.icon-dashboard {
       background-image: url("http://www.entypo.com/images//gauge.svg");
     }
+
     .menu ul li.icon-customers {
       background-image: url("http://www.entypo.com/images//briefcase.svg");
     }
+
     .menu ul li.icon-users {
       background-image: url("http://www.entypo.com/images//users.svg");
     }
+
     .menu ul li.icon-calendar {
       background-image: url("http://www.entypo.com/images//calendar.svg");
+    }
+
+    .menu ul li.icon-medicine {
+      background-image: url("https://www.entypo.com/images//pills.svg");
+    }
+
+    .menu ul li.icon-prescription {
+      background-image: url("https://www.entypo.com/images//documents.svg");
     }
 
     .menu ul li:hover {
       background-color: rgba(0, 0, 0, 0.1);
     }
+
     .menu ul li:focus {
       outline: none;
     }
+
     @media screen and (max-width: 900px) and (min-width: 400px) {
       body {
         padding-left: 90px;
@@ -224,6 +231,7 @@
         transform: translate3d(0px, -50%, 0);
       }
     }
+
     @media screen and (max-width: 400px) {
       body {
         padding-left: 0;
@@ -269,13 +277,10 @@
         pointer-events: none;
       }
     }
-
   </style>
-
 </head>
 
 <body>
-
   <!-- partial:index.partial.html -->
   <nav class="menu" tabindex="0">
     <div class="smartphone-menu-trigger"></div>
@@ -290,12 +295,13 @@
       <li tabindex="0" class="icon-customers"> <a style="color:white; text-decoration:none;" href="/admin-doctor"><span>Doctores </span></a></li>
       <li tabindex="0" class="icon-users"> <a style="color:white; text-decoration:none;" href="/admin-patient"><span>Pacientes </span></a></li>
       <li tabindex="0" class="icon-calendar"> <a style="color:white; text-decoration:none;" href="/admin-appointment"><span>Registros</span></a></li>
+      <li tabindex="0" class="icon-medicine"> <a style="color:white; text-decoration:none;" href="/admin-medicine"><span>Medicinas </span></a></li>
+      <!-- NUEVO ITEM PARA RECETAS -->
+      <li tabindex="0" class="icon-prescription"> <a style="color:white; text-decoration:none;" href="/admin-view-prescription"><span>Ver Recetas </span></a></li>
     </ul>
   </nav>
 
   <main>
-
-
     <!-- nav start -->
     <div class="bs-example">
       <nav class="navbar navbar-expand-md  navbar-dark fixed-top" style="background:#337AB7;">
@@ -305,7 +311,6 @@
         </button>
         <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
           <div class="navbar-nav" style=" margin-left: 90%;">
-
             <a href="/logout" class="nav-item nav-link">Cerrar sesión</a>
           </div>
         </div>
@@ -316,7 +321,6 @@
 
     <!-- content start-->
     {% block content %}
-
     {% endblock content %}
     <!-- content end-->
 
@@ -341,14 +345,6 @@
         </div>
       </div>
     </footer>
-
   </main>
-  <!--
-  developed By : sumit kumar
-  facebook : fb.com/sumit.luv
-  youtube : youtube.com/lazycoders
-  -->
-
 </body>
-
 </html>

@@ -1,0 +1,153 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+{% block content %}
+
+<head>
+  <style>
+    .dashboard-card {
+      text-align: center;
+      padding: 25px;
+      border-radius: 15px;
+      color: white;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .card-number {
+      font-size: 40px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .bg-total { background: linear-gradient(45deg, #4099ff, #73b4ff); }
+    .bg-low { background: linear-gradient(45deg, #FF9800, #FFB74D); }
+    .bg-out { background: linear-gradient(45deg, #f44336, #ef5350); }
+    .bg-expired { background: linear-gradient(45deg, #9c27b0, #ba68c8); }
+    
+    .quick-actions {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 30px;
+    }
+    
+    .stat-card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    .stat-card-link:hover {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+
+<div class="container">
+  <div class="panel panel-primary">
+    <div class="panel-heading" style="background: linear-gradient(45deg, #1a237e, #3949ab);">
+      <h3 style="text-align: center; color: white; padding: 15px; margin: 0;">
+        <i class="fa fa-medkit"></i> INVENTARIO DE MEDICAMENTOS
+      </h3>
+    </div>
+    <br>
+    
+    <div class="panel-body">
+      
+      <!-- Mensajes -->
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert">
+              <span>&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Tarjetas de Estadísticas -->
+      <div class="row">
+        <div class="col-md-3">
+          <a href="{% url 'admin-view-medicine' %}" class="stat-card-link">
+            <div class="dashboard-card bg-total">
+              <i class="fa fa-medkit fa-3x"></i>
+              <div class="card-number">{{ total_medicines }}</div>
+              <div class="card-title">Total Medicamentos</div>
+              <small>Click para ver todos</small>
+            </div>
+          </a>
+        </div>
+        
+        <div class="col-md-3">
+          <a href="{% url 'admin-low-stock-medicine' %}" class="stat-card-link">
+            <div class="dashboard-card bg-low">
+              <i class="fa fa-exclamation-triangle fa-3x"></i>
+              <div class="card-number">{{ low_stock }}</div>
+              <div class="card-title">Stock Bajo</div>
+              <small>Menos de 20 unidades</small>
+            </div>
+          </a>
+        </div>
+        
+        <div class="col-md-3">
+          <a href="{% url 'admin-out-of-stock-medicine' %}" class="stat-card-link">
+            <div class="dashboard-card bg-out">
+              <i class="fa fa-times-circle fa-3x"></i>
+              <div class="card-number">{{ out_of_stock }}</div>
+              <div class="card-title">Agotados</div>
+              <small>Stock en cero</small>
+            </div>
+          </a>
+        </div>
+        
+        <div class="col-md-3">
+          <div class="dashboard-card bg-expired">
+            <i class="fa fa-calendar-times-o fa-3x"></i>
+            <div class="card-number">{{ expired_soon }}</div>
+            <div class="card-title">Por Vencer</div>
+            <small>Próximos 30 días</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones Rápidas -->
+      <div class="quick-actions">
+        <h4 style="text-align: center; margin-bottom: 20px; color: #1a237e;">
+          <i class="fa fa-bolt"></i> Acciones Rápidas
+        </h4>
+        <div class="row text-center">
+          <div class="col-md-4">
+            <a href="{% url 'admin-view-medicine' %}" class="btn btn-primary btn-lg" style="width: 200px;">
+              <i class="fa fa-list"></i> Ver Inventario
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a href="{% url 'admin-add-medicine' %}" class="btn btn-success btn-lg" style="width: 200px;">
+              <i class="fa fa-plus"></i> Agregar Medicina
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a href="#" class="btn btn-warning btn-lg" style="width: 200px;">
+              <i class="fa fa-file-pdf-o"></i> Reporte PDF
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

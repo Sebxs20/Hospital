@@ -1,0 +1,111 @@
+{% extends 'hospital/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+<br><br><br>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header" style="background-color: #1a237e; color: white;">
+                    <h4 class="text-center">Inventario de Medicamentos</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Mensajes -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="close" data-dismiss="alert">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <a href="{% url 'admin-add-medicine' %}" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Agregar Medicamento
+                        </a>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                    <th>Precio</th>
+                                    <th>Proveedor</th>
+                                    <th>Vencimiento</th>
+                                    <th>Ubicación</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicine in medicines %}
+                                <tr>
+                                    <td>{{ medicine.name }}</td>
+                                    <td>{{ medicine.category.name }}</td>
+                                    <td>
+                                        <span class="badge {% if medicine.stock_quantity <= medicine.min_stock %}badge-danger{% else %}badge-success{% endif %}">
+                                            {{ medicine.stock_quantity }}
+                                        </span>
+                                    </td>
+                                    <td>${{ medicine.price }}</td>
+                                    <td>{{ medicine.supplier }}</td>
+                                    <td>{{ medicine.expiry_date }}</td>
+                                    <td>{{ medicine.location }}</td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{% url 'admin-update-medicine' medicine.id %}" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-edit"></i> Editar
+                                            </a>
+                                            <a href="{% url 'admin-medicine-movement' medicine.id %}" class="btn btn-info btn-sm">
+                                                <i class="fas fa-exchange-alt"></i> Movimientos
+                                            </a>
+                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal{{ medicine.id }}">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal de Eliminación -->
+                                <div class="modal fade" id="deleteModal{{ medicine.id }}" tabindex="-1" role="dialog">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Confirmar Eliminación</h5>
+                                                <button type="button" class="close" data-dismiss="modal">
+                                                    <span>&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                ¿Estás seguro de que deseas eliminar el medicamento <strong>{{ medicine.name }}</strong>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form method="POST" action="{% url 'admin-delete-medicine' medicine.id %}">
+                                                    {% csrf_token %}
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No hay medicamentos en el inventario</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
